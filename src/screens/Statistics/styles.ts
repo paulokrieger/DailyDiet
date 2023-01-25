@@ -21,7 +21,7 @@ export const HandleBackButton = styled.TouchableOpacity`
 export const BackIcon = styled(ArrowLeft).attrs<onDietProps>(
   ({ theme, onDiet }) => ({
     size: 24,
-    color: onDiet ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK,
+    color: onDiet ? theme.COLORS.RED_DARK : theme.COLORS.GREEN_DARK,
   })
 )``;
 

@@ -16,9 +16,10 @@ import { Container, Date } from "./styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStatistics } from "../../hooks/statistics";
 import { MealDTO } from "../../DTOs/MealDTO";
+import { Loading } from "../../components/Loading";
 
 export function Home() {
-  const { meals, loadMeals } = useMeal();
+  const { meals, loadMeals, loading } = useMeal();
 
   const { mealsOnDietPercentage, getHeaderColorByDiet } = useStatistics();
 
@@ -65,19 +66,23 @@ export function Home() {
         onPress={handleAddNewMeat}
       />
 
-      <SectionList
-        sections={meals}
-        renderItem={({ item }) => (
-          <FoodCard
-            name={item.name}
-            time={String(item.time)}
-            onDiet={item.type}
-            onPress={() => handleEditMeal(item)}
-          />
-        )}
-        renderSectionHeader={({ section }) => <Date>{section.title}</Date>}
-        keyExtractor={(item) => String(item.id)}
-      />
+      {loading ? (
+        <Loading />
+      ) : (
+        <SectionList
+          sections={meals}
+          renderItem={({ item }) => (
+            <FoodCard
+              name={item.name}
+              time={String(item.time)}
+              onDiet={item.type}
+              onPress={() => handleEditMeal(item)}
+            />
+          )}
+          renderSectionHeader={({ section }) => <Date>{section.title}</Date>}
+          keyExtractor={(item) => String(item.id)}
+        />
+      )}
     </Container>
   );
 }

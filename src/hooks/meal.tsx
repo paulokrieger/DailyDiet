@@ -18,6 +18,7 @@ interface MealProviderProps {
 
 interface MealContextType {
   meals: MealGroupDTO[];
+  loading: boolean;
   loadMeals: () => void;
   addMeal: (meal: MealDTO) => void;
   editMeal: (meal: MealDTO, oldDate: string) => void;
@@ -26,6 +27,7 @@ interface MealContextType {
 
 export function MealContextProvider({ children }: MealProviderProps) {
   const [meals, setMeals] = useState<MealGroupDTO[]>([]);
+  const [loading, setLoading] = useState(true);
 
   async function addMeal(newMeal: MealDTO) {
     try {
@@ -55,8 +57,11 @@ export function MealContextProvider({ children }: MealProviderProps) {
 
   async function editMeal(editMeal: MealDTO, oldDate: string) {
     try {
+      await loadMeals();
+
       const oldMeal = { ...editMeal };
       oldMeal.date = oldDate;
+
       await deleteMeal(oldMeal);
       await addMeal(editMeal);
     } catch (err) {
@@ -97,9 +102,14 @@ export function MealContextProvider({ children }: MealProviderProps) {
       const storage = await AsyncStorage.getItem(MEAL_COLLECTION);
       const storedMeals: MealGroupDTO[] = storage ? JSON.parse(storage) : [];
       setMeals(storedMeals);
-      return storedMeals;
+      //ordenação
+      return storedMeals.sort((a, b) =>
+        a.data[0].date < b.data[0].date ? 1 : -1
+      );
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   }, [meals]);
 
@@ -107,6 +117,7 @@ export function MealContextProvider({ children }: MealProviderProps) {
     <MealContext.Provider
       value={{
         meals,
+        loading,
         addMeal,
         deleteMeal,
         editMeal,
